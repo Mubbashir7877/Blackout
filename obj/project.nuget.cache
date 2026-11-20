@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "ymeBgZAsvd4=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\dgmub\\Documents\\WindowsApps\\BlackOut\\BlackOut.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dgmub\\.nuget\\packages\\system.management\\10.0.7\\system.management.10.0.7.nupkg.sha512"
+  ],
+  "logs": []
+}
