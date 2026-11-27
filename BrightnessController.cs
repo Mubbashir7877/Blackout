@@ -9,16 +9,16 @@ namespace BlackOut
         {
             try
             {
-                brightness = Math.Max((byte)1, brightness);
-
                 using var searcher = new ManagementObjectSearcher(
                     "root\\WMI",
                     "SELECT * FROM WmiMonitorBrightnessMethods"
                 );
 
-                foreach (ManagementObject obj in searcher.Get())
+                using var results = searcher.Get();
+                foreach (ManagementObject obj in results)
                 {
-                    obj.InvokeMethod("WmiSetBrightness", new object[] { 1, brightness });
+                    using (obj)
+                        obj.InvokeMethod("WmiSetBrightness", new object[] { 1u, brightness });
                 }
             }
             catch
@@ -27,4 +27,4 @@ namespace BlackOut
             }
         }
     }
-} 
+}

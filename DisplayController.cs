@@ -55,17 +55,21 @@ namespace BlackOut
             primaryOnly = new Configuration(paths.ToArray(), modes.ToArray());
         }
 
-        public void DisconnectExtendedDisplays()
+        public void DisconnectExtendedDisplays(bool verify = false)
         {
-            var active = ReadActiveConfiguration();
-            if (active.Paths.Any(path => !primaryOnly.Paths.Any(allowed =>
-                path.Target.Adapter == allowed.Target.Adapter && path.Target.Id == allowed.Target.Id &&
-                path.Source.Adapter == allowed.Source.Adapter && path.Source.Id == allowed.Source.Id)))
+            if (HasExtendedDisplays())
             {
                 primaryOnly.Apply();
                 changed = true;
+                if (verify && HasExtendedDisplays())
+                    throw new InvalidOperationException("Windows still reports an active extended display.");
             }
         }
+
+        private bool HasExtendedDisplays() => ReadActiveConfiguration().Paths.Any(path =>
+            !primaryOnly.Paths.Any(allowed =>
+                path.Target.Adapter == allowed.Target.Adapter && path.Target.Id == allowed.Target.Id &&
+                path.Source.Adapter == allowed.Source.Adapter && path.Source.Id == allowed.Source.Id));
 
         public void Restore()
         {

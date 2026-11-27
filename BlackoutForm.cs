@@ -7,6 +7,7 @@ namespace BlackOut
     public class BlackoutForm : Form
     {
         private readonly DisplayController displays;
+        private readonly BluetoothController bluetooth;
         private readonly System.Windows.Forms.Timer displayTimer;
 
         private TextBox? exitTextBox;
@@ -14,10 +15,18 @@ namespace BlackOut
         private Panel? exitPanel;
         private CheckBox? blockToggle;
         private KeyboardBlocker? keyboardBlocker;
+        private Task? dimBrightnessTask;
+        private bool exiting;
 
-        internal BlackoutForm(DisplayController displays)
+        internal void DimBrightness()
+        {
+            dimBrightnessTask = Task.Run(() => BrightnessController.SetLaptopBrightness(1));
+        }
+
+        internal BlackoutForm(DisplayController displays, BluetoothController bluetooth)
         {
             this.displays = displays;
+            this.bluetooth = bluetooth;
             displayTimer = new System.Windows.Forms.Timer { Interval = 500 };
             displayTimer.Tick += MaintainDisplayConfiguration;
 
@@ -168,19 +177,34 @@ namespace BlackOut
             }
         }
 
-        private void ExitButton_Click(object? sender, EventArgs e)
+        private async void ExitButton_Click(object? sender, EventArgs e)
         {
+            if (exiting)
+                return;
+
             if (exitTextBox != null &&
                 string.Equals(exitTextBox.Text.Trim(), "EXIT", StringComparison.OrdinalIgnoreCase))
             {
+                exiting = true;
                 displayTimer.Stop();
+                keyboardBlocker?.Dispose();
+                keyboardBlocker = null;
+                if (dimBrightnessTask is { } pendingBrightness)
+                    await pendingBrightness;
+                await Task.Run(() => BrightnessController.SetLaptopBrightness(100));
+
+                var errors = new List<string>(bluetooth.Restore());
                 try
                 {
                     displays.Restore();
                 }
                 catch (System.ComponentModel.Win32Exception ex)
                 {
-                    MessageBox.Show(this, $"Windows could not restore the previous display layout. {ex.Message}",
+                    errors.Add($"Windows could not restore the previous display layout. {ex.Message}");
+                }
+                if (errors.Count > 0)
+                {
+                    MessageBox.Show(this, string.Join(Environment.NewLine, errors),
                         "Black Out", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 Application.Exit();
