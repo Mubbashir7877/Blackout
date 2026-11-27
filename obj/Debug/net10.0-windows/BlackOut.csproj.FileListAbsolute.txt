@@ -16,3 +16,4 @@ C:\Users\dgmub\Documents\WindowsApps\BlackOut\bin\Debug\net10.0-windows\System.M
 C:\Users\dgmub\Documents\WindowsApps\BlackOut\bin\Debug\net10.0-windows\runtimes\win\lib\net10.0\System.Management.dll
 C:\Users\dgmub\Documents\WindowsApps\BlackOut\obj\Debug\net10.0-windows\BlackOut.csproj.AssemblyReference.cache
 C:\Users\dgmub\Documents\WindowsApps\BlackOut\obj\Debug\net10.0-windows\BlackOut.csproj.Up2Date
+C:\Users\dgmub\Documents\WindowsApps\BlackOut\obj\Debug\net10.0-windows\BlackOut.sourcelink.json
